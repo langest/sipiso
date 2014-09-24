@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"image"
 	"image/color"
 	"image/png"
@@ -11,8 +10,11 @@ import (
 )
 
 func main() {
-	fmt.Println(len(os.Args), os.Args)
-	file, err := os.Open("path/to/image.img")
+	if len(os.Args) != 3 {
+		log.Fatal("Invalid number of arguments, it should be 2\nThe first one is path to image\nThe second is path to new image\n")
+		return
+	}
+	file, err := os.Open(os.Args[1])
 	defer file.Close()
 	if err != nil {
 		log.Fatal(err)
@@ -21,10 +23,14 @@ func main() {
 
 	//TODO check format
 	img, _, err := image.Decode(file)
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
 
 	sortedImg := sortVertically(img)
 
-	err = saveImage("derp", sortedImg)
+	err = saveImage(os.Args[2], sortedImg)
 	if err != nil {
 		log.Fatal(err)
 		return
