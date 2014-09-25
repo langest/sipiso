@@ -6,6 +6,7 @@ import (
 	_ "image/jpeg"
 	"image/png"
 	"log"
+	"math/rand"
 	"os"
 	"sort"
 )
@@ -31,15 +32,18 @@ func main() {
 
 	sortedImg := image.NewNRGBA(img.Bounds())
 	bounds := img.Bounds()
-	pieces := 10
+	xPieces := bounds.Max.X / 2
 	startX := bounds.Min.X
-	startY := bounds.Min.Y
-	stepX := bounds.Max.X / pieces
-	stepY := bounds.Max.Y / pieces
-	for i := 0; i < pieces; i++ {
-		for j := 0; j < pieces; j++ {
-			sortVertically(sortedImg, img, startX+i*stepX, startX+(i+1)*stepX, startY+j*stepY, startY+(j+1)*stepY)
+	stepX := bounds.Max.X / xPieces
+	for x := 0; x < xPieces; x++ {
+		currentY := 0
+		yVariance := bounds.Max.Y / 10
+		nextY := rand.Intn(yVariance)
+		for ; nextY < bounds.Max.Y; nextY += 10 + rand.Intn(yVariance) {
+			sortVertically(sortedImg, img, startX+x*stepX, startX+(x+1)*stepX, currentY, nextY)
+			currentY = nextY
 		}
+		sortVertically(sortedImg, img, startX+x*stepX, startX+(x+1)*stepX, currentY, bounds.Max.Y)
 	}
 
 	err = saveImage(os.Args[2], sortedImg)
