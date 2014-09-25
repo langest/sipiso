@@ -12,8 +12,8 @@ import (
 )
 
 func main() {
-	if len(os.Args) != 3 {
-		log.Fatal("Invalid number of arguments, it should be 2\nThe first one is path to image\nThe second is path to new image\n")
+	if len(os.Args) < 2 {
+		log.Fatal("Invalid number of arguments, it should be at least 1 and at most two\nThe first one is path to image\nThe second is path to the output image\nIf no output is given it will output to \"<inputfile.ending>.sorted.png\"")
 		return
 	}
 	file, err := os.Open(os.Args[1])
@@ -46,7 +46,11 @@ func main() {
 		sortVertically(sortedImg, img, startX+x*stepX, startX+(x+1)*stepX, currentY, bounds.Max.Y)
 	}
 
-	err = saveImage(os.Args[2], sortedImg)
+	output := os.Args[1] + "sorted.png"
+	if len(os.Args) == 3 {
+		output = os.Args[2]
+	}
+	err = saveImage(output, sortedImg)
 	if err != nil {
 		log.Fatal(err)
 		return
