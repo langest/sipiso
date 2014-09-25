@@ -29,7 +29,18 @@ func main() {
 		return
 	}
 
-	sortedImg := sortVertically(img)
+	sortedImg := image.NewNRGBA(img.Bounds())
+	bounds := img.Bounds()
+	pieces := 10
+	startX := bounds.Min.X
+	startY := bounds.Min.Y
+	stepX := bounds.Max.X / pieces
+	stepY := bounds.Max.Y / pieces
+	for i := 0; i < pieces; i++ {
+		for j := 0; j < pieces; j++ {
+			sortVertically(sortedImg, img, startX+i*stepX, startX+(i+1)*stepX, startY+j*stepY, startY+(j+1)*stepY)
+		}
+	}
 
 	err = saveImage(os.Args[2], sortedImg)
 	if err != nil {
@@ -75,18 +86,15 @@ func (c *column) Swap(i, j int) {
 	c.color[j] = tmp
 }
 
-//TODO will have a bug if image don't span from origo
-func sortVertically(img image.Image) *image.NRGBA {
-	sortedImage := image.NewNRGBA(img.Bounds())
-	for x := img.Bounds().Min.X; x < img.Bounds().Max.X; x++ {
-		column := newColumn(img.Bounds().Max.Y - img.Bounds().Min.Y)
-		for y := img.Bounds().Min.Y; y < img.Bounds().Max.Y; y++ {
-			column.color[y] = img.At(x, y)
+func sortVertically(img *image.NRGBA, orig image.Image, xStart, xEnd, yStart, yEnd int) {
+	for x := xStart; x < xEnd; x++ {
+		column := newColumn(yEnd - yStart) //Calculate the size of the column
+		for y := 0; y < yEnd-yStart; y++ {
+			column.color[y] = orig.At(x, yStart+y)
 		}
 		sort.Sort(column)
-		for y := img.Bounds().Min.Y; y < img.Bounds().Max.Y; y++ {
-			sortedImage.Set(x, y, column.color[y])
+		for y := 0; y < yEnd-yStart; y++ {
+			img.Set(x, yStart+y, column.color[y])
 		}
 	}
-	return sortedImage
 }
