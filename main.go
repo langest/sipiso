@@ -81,7 +81,7 @@ func (c *column) Len() int {
 func (c *column) Less(i, j int) bool {
 	ir, ig, ib, _ := c.color[i].RGBA()
 	jr, jg, jb, _ := c.color[j].RGBA()
-	return ir+ig+ib < jr+jg+jb
+	return ir+ig+ib > jr+jg+jb
 }
 
 func (c *column) Swap(i, j int) {
