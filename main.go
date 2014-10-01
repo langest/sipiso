@@ -46,7 +46,7 @@ func main() {
 		sortVertically(sortedImg, img, startX+x*stepX, startX+(x+1)*stepX, currentY, bounds.Max.Y)
 	}
 
-	output := os.Args[1] + "sorted.png"
+	output := os.Args[1] + ".sorted.png"
 	if len(os.Args) == 3 {
 		output = os.Args[2]
 	}
